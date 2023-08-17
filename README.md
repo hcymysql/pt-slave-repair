@@ -23,19 +23,32 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 shell> cd pt-slave-repair/
 shell> pip3 install -r requirements.txt
 ```
+
+# pt-slave-repair会针对1062和1032的错误进行数据修复
+
 ### 一、前台运行
 ```
 shell> python3 pt-slave-repair.py -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test
 ```
+#### 注：你可以按<ctrl+c>或者<ctrl+z>退出程序。
 
 ### 二、后台运行
 ```
 shell> python3 pt-slave-repair.py -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test --daemon
 ```
-工具会针对1062和1032的错误进行数据修复
+#### 注：你可以
+```
+shell> kill `cat /tmp/test_daemon.pid`
+```
+退出程序。
 
--e, --enable-binlog   Enable binary logging of the restore data
+### -e, --enable-binlog   Enable binary logging of the restore data
 
-#### 注：-e 选项，默认修复完的数据不会记录在binlog文件里，如果你的slave是二级从库（后面还接着一个slave），那么开启这个选项。
+#### 1) -e 选项，默认修复完的数据不会记录在binlog文件里，如果你的slave是二级从库（后面还接着一个slave），那么开启这个选项。
 
+#### 2) 开启后台守护进程后，会自动在当前目录下创建一个log目录和{db_name}_INFO.log文件，该文件保存着日志信息。
+
+#### 3) 开启后台守护进程后，pid文件在/tmp目录下，/tmp/{db_name}_daemon.pid
+
+![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/a92170ef-cd65-467b-b055-b852732a3076)
 
