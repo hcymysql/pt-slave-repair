@@ -34,3 +34,8 @@ shell> python3 pt-slave-repair.py -H 192.168.198.239 -P 3346 -u admin -p hechuny
 ```
 工具会针对1062和1032的错误进行数据修复
 
+-e, --enable-binlog   Enable binary logging of the restore data
+
+#### 注：-e 选项，默认修复完的数据不会记录在binlog文件里，如果你的slave是二级从库（后面还接着一个slave），那么开启这个选项。
+
+
