@@ -21,6 +21,7 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 # 原理
 ```
 1） 当检测到同步报错1062（主键冲突、重复）和1032（数据丢失）时，首先要进行binlog环境检查，如果binlog_format不等于ROW并且binlog_row_image不等于FULL，则退出主程序。
+    如果错误号非1062或1032，则直接退出主程序。
 
 2） 获取show slave status信息，得到binlog、position、gtid信息
 
