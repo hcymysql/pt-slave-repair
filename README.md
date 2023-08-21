@@ -61,7 +61,7 @@ shell> nohup ./pt-slave-repair -H 192.168.198.239 -P 3346 -u admin -p hechunyang
 ```
 shell> pkill pt-slave-repair
 ```
-退出程序。
+退出后台进程。
 
 ### -e, --enable-binlog   Enable binary logging of the restore data
 
@@ -69,5 +69,11 @@ shell> pkill pt-slave-repair
 
 #### 2) 开启后台守护进程后，会自动在当前目录下创建一个log目录和{db_name}_INFO.log文件，该文件保存着日志信息。
 
+![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/743a5585-d78e-41d9-8e89-7dafe6d93222)
+
+
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/a92170ef-cd65-467b-b055-b852732a3076)
+
+### 支持MySQL5.7/8.0和MariaDB数据库，工具适用于Centos7 系统。
+
 
