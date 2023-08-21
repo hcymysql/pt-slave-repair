@@ -19,18 +19,25 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 总的来说，自动修复主从同步数据工具能够提高效率、降低风险、实时监控和响应、自动化运维以及快速故障恢复，可以极大地提升同步运行的稳定性和可靠性。
 
 # 原理
+```
 1） 当检测到同步报错1062（主键冲突、重复）和1032（数据丢失）时，首先要进行binlog环境检查，如果binlog_format不等于ROW并且binlog_row_image不等于FULL，则退出主程序。
 
 2） 获取show slave status信息，得到binlog、position、gtid信息
 
 3） 连接到主库上解析binlog，如果是DELETE删除语句，则直接跳过
-（如果开启GITD复制模式，启用SET gtid_next方式；如果开启位置点复制模式，启动SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1方式）
 
-4） 如果是UPDATE/INSERT语句，则把BINLOG解析为具体的SQL，并且反转SQL，将其转换为REPLACE INTO
+4)  关闭slave_parallel_workers多线程并行复制
 
-5） 将解析后的REPLACE INTO语句反向插入slave上，使其数据保持一致，然后执行第3步操作；
+5)  如果开启GITD复制模式，启用SET gtid_next方式；如果开启位置点复制模式，启动SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1方式）
 
-6） 依次类推，最终使其show slave status同步为双YES（同步正常）。
+6） 如果是UPDATE/INSERT语句，则把BINLOG解析为具体的SQL，并且反转SQL，将其转换为REPLACE INTO
+
+7） 将解析后的REPLACE INTO语句反向插入slave上，使其数据保持一致，然后执行第5步操作；
+
+8） 将slave设置为read_only只读模式
+
+9） 依次类推，最终使其show slave status同步为双YES（同步正常）。
+```
 
 # 使用
 ```
