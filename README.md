@@ -27,7 +27,7 @@ shell> chmod 755 pt-slave-repair
 
 ### 一、前台运行
 ```
-shell> ./pt-slave-repair.py -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test
+shell> ./pt-slave-repair -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test
 ```
 #### 注：你可以按<ctrl+c>或者<ctrl+z>退出程序。
 
