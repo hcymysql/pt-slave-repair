@@ -5,6 +5,7 @@ from check_repl_mysql import MySQL_Check
 from reverse_sql import *
 import argparse
 import signal
+import daemon
 import daemon.pidfile
 import logging
 
