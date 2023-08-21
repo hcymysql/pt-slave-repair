@@ -20,8 +20,7 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 
 # 使用
 ```
-shell> cd pt-slave-repair/
-shell> pip3 install -r requirements.txt
+shell> chmod 755 pt-slave-repair
 ```
 
 # pt-slave-repair会针对1062和1032的错误进行数据修复
