@@ -74,6 +74,19 @@ shell> pkill pt-slave-repair
 
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/a92170ef-cd65-467b-b055-b852732a3076)
 
+
+# MySQL 用户的最小化权限：
+```
+mysql> show grants for hcy@'%';
++------------------------------------------------------------------------+
+| Grants for hcy@%                                                       |
++------------------------------------------------------------------------+
+| GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `hcy`@`%` |
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `hcy`@`%`          |
+| GRANT SELECT ON `performance_schema`.* TO `hcy`@`%`                    |
++------------------------------------------------------------------------+
+3 rows in set (0.00 sec)
+```
 ### 支持MySQL5.7/8.0和MariaDB数据库，工具适用于Centos7 系统。
 
 
