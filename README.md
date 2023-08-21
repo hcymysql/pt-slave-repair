@@ -45,7 +45,7 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 shell> chmod 755 pt-slave-repair
 ```
 
-# pt-slave-repair会针对1062和1032的错误进行数据修复
+# 连接到同步报错的slave从库上执行
 
 ### 一、前台运行
 ```
