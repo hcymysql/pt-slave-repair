@@ -125,11 +125,12 @@ while True:
         # 提取每个 GTID 的集合
         retrieved_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', retrieved_gtid_set)
         #executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', executed_gtid_set)
-        if executed_gtid_set == "":
+        if executed_gtid_set == "" or executed_gtid_set is None:
             executed_gtid_list = [retrieved_gtid_set]
-        executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', executed_gtid_set)
+        else:
+            executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', executed_gtid_set)
         #print(f"retrieved_gtid_list: {retrieved_gtid_list}")
-        #print(f"executed_gtid_list: {executed_gtid_list}") 调试
+        #print(f"executed_gtid_list: {executed_gtid_list}") #调试
 
         gtid_domain = None
         gtid_range_value = None
