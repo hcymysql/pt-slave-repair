@@ -63,7 +63,7 @@ logger.addHandler(console_handler)
 
 def signal_handler(sig, frame):
     logger.info('程序被终止')
-    exit(0)
+    sys.exit(0)
 
 # 注册信号处理函数
 signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
