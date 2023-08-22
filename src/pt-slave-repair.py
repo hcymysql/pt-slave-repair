@@ -63,7 +63,7 @@ logger.addHandler(console_handler)
 
 def signal_handler(sig, frame):
     logger.info('程序被终止')
-    sys.exit(0)
+    exit(0)
 
 # 注册信号处理函数
 signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
@@ -118,10 +118,18 @@ while True:
         retrieved_gtid_set = r_dict['Retrieved_Gtid_Set']
         executed_gtid_set = r_dict['Executed_Gtid_Set']
         last_sql_errno = int(r_dict['Last_SQL_Errno'])
+        #print(f"retrieved_gtid_set: {retrieved_gtid_set}")
+        #print(f"executed_gtid_set: {executed_gtid_set}")
 
+        executed_gtid_list = []
         # 提取每个 GTID 的集合
         retrieved_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', retrieved_gtid_set)
-        executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', executed_gtid_set)
+        #executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', executed_gtid_set)
+        if executed_gtid_set == "":
+            executed_gtid_list = [retrieved_gtid_set]
+        executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', executed_gtid_set)
+        #print(f"retrieved_gtid_list: {retrieved_gtid_list}")
+        #print(f"executed_gtid_list: {executed_gtid_list}") 调试
 
         gtid_domain = None
         gtid_range_value = None
