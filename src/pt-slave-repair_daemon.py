@@ -116,8 +116,7 @@ def main():
 
             executed_gtid_list = []
             # 提取每个 GTID 的集合
-            retrieved_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', retrieved_gtid_set)
-            #executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+)', executed_gtid_set)
+            retrieved_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', retrieved_gtid_set)
             if executed_gtid_set == "":
                 executed_gtid_list = [retrieved_gtid_set]
             else:
