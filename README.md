@@ -40,6 +40,8 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 9） 依次类推，最终使其show slave status同步为双YES（同步正常）。
 ```
 
+![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/f263eded-85ef-4629-b497-9927bfaa70db)
+
 # 使用
 ```
 shell> chmod 755 pt-slave-repair
