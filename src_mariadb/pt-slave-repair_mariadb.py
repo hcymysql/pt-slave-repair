@@ -161,7 +161,7 @@ while True:
                                 logger.info("成功修复了 【%d】 行数据" % count)
                                 # 再开启多线程并行复制
                                 mysql_conn.turn_on_parallel(slave_workers)
-                        else:
+                        else: #基于GTID事务号复制
                             mysql_conn.turn_off_parallel()
                             time.sleep(0.3)
                             skip_pos_r = mysql_conn.skip_gtid(gtid_number)
