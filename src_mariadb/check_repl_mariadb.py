@@ -183,6 +183,21 @@ class MySQL_Check(object):
         return True
 
 
+    def skip_gtid(self, gtid_value):
+        self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
+        cursor = self._connection.cursor()
+        try:
+            skip_gtid_sql = 'STOP SLAVE; set global gtid_slave_pos= \'{0}\'; START SLAVE' .format(gtid_value)
+            cursor.execute(skip_gtid_sql)
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            return False
+        finally:
+            cursor.close()
+
+        return True
+
+
     def skip_position(self):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
         cursor = self._connection.cursor()
