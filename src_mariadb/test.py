@@ -1,4 +1,4 @@
-# ²âÊÔÓÃÀı
+# æµ‹è¯•ç”¨ä¾‹
 from pymysqlreplication import BinLogStreamReader
 #from pymysqlreplication.event import GtidEvent
 from pymysqlreplication.event import MariadbGtidEvent
@@ -35,4 +35,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
