@@ -119,7 +119,7 @@ while True:
         if last_sql_errno in (1062, 1032):
             repair_sql_list, gtid_number = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password,
                                     mysql_charset='utf8', binlog_file=relay_master_log_file, binlog_pos=exec_master_log_pos)
-            #print(f"SQL语句：{repair_sql_list}") 调试
+            #print(f"SQL语句：{repair_sql_list}")
             #print(f"GTID事务号：{gtid_number}")
             for count, repair_sql in enumerate(repair_sql_list, 1):
                 logger.info(f"修复数据的SQL语句: {repair_sql}")
@@ -128,7 +128,7 @@ while True:
                 pattern = re.compile(r'^delete', re.IGNORECASE)
                 if pattern.match(repair_sql): #如果匹配上了DELETE，直接跳过错误，不做处理。
                     # 判断从库是否开启了基于GTID的复制
-                    if Using_Gtid == "NO": #基于Position位置点复制
+                    if Using_Gtid == "No": #基于Position位置点复制
                         mysql_conn.turn_off_parallel()
                         time.sleep(0.3)
                         skip_pos_r = mysql_conn.skip_position()
@@ -153,7 +153,7 @@ while True:
                         fix_result = mysql_conn.fix_error_disable_binlog(repair_sql)
                     if fix_result > 0:
                         # 判断从库是否开启了基于GTID的复制
-                        if Using_Gtid == "NO":  # 基于Position位置点复制
+                        if Using_Gtid == "No":  # 基于Position位置点复制
                             mysql_conn.turn_off_parallel()
                             time.sleep(0.3)
                             skip_pos_r = mysql_conn.skip_position()
