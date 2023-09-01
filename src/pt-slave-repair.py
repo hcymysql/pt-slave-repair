@@ -99,9 +99,10 @@ while True:
                       % (r_dict['Slave_IO_Running'], r_dict['Slave_SQL_Running'], \
                          r_dict['Last_Error'], r_dict['Last_SQL_Error']))
         error_dict = mysql_conn.get_slave_error()
-        logger.error('错误号是：%s' % error_dict['LAST_ERROR_NUMBER'])
-        logger.error('错误信息是：%s' % error_dict['LAST_ERROR_MESSAGE'])
-        logger.error('报错时间是：%s\n' % error_dict['LAST_ERROR_TIMESTAMP'])
+        if error_dict is not None: # 判断performance_schema参数是否开启
+            logger.error('错误号是：%s' % error_dict['LAST_ERROR_NUMBER'])
+            logger.error('错误信息是：%s' % error_dict['LAST_ERROR_MESSAGE'])
+            logger.error('报错时间是：%s\n' % error_dict['LAST_ERROR_TIMESTAMP'])
         logger.info('-' * 100)
         logger.info('开始自动修复同步错误的数据......\n')
 
