@@ -16,6 +16,7 @@ parser.add_argument('-u', '--slave_user', type=str, help='Slave User', required=
 parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', required=True)
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.2，更新日期：2023-09-01')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -89,6 +90,8 @@ while True:
     if r_dict['Slave_IO_Running'] == 'Yes' and r_dict['Slave_SQL_Running'] == 'Yes':
         ok_count += 1
         if ok_count < 2:
+            if r_gtid == "ON" and r_dict['Auto_Position'] != 1:
+                logger.warning('\033[1;33m开启基于GTID全局事务ID复制，CHANGE MASTER TO MASTER_AUTO_POSITION = 1 需要设置为1. \033[0m')
             logger.info('\033[1;36m同步正常. \033[0m')
 
     elif (r_dict['Slave_IO_Running'] == 'Yes' and r_dict['Slave_SQL_Running'] == 'No') \
@@ -160,9 +163,13 @@ while True:
                 if pattern.match(repair_sql): #如果匹配上了DELETE，直接跳过错误，不做处理。
                     # 判断从库是否开启了基于GTID的复制
                     if r_gtid != "ON": #基于Position位置点复制
+                        mysql_conn.turn_off_parallel()
+                        time.sleep(0.3)
                         skip_pos_r = mysql_conn.skip_position()
                         if skip_pos_r:
                             logger.info("成功修复了 【%d】 行数据" % count)
+                            # 再开启多线程并行复制
+                            mysql_conn.turn_on_parallel(slave_workers)
                     else: #基于GTID事务号复制
                         if gtid_range is not None and '-' not in str(gtid_range):
                             gtid_number = int(gtid_range) + 1
@@ -195,9 +202,13 @@ while True:
                     if fix_result > 0:
                         # 判断从库是否开启了基于GTID的复制
                         if r_gtid != "ON":  # 基于Position位置点复制
+                            mysql_conn.turn_off_parallel()
+                            time.sleep(0.3)
                             skip_pos_r = mysql_conn.skip_position()
                             if skip_pos_r:
                                 logger.info("成功修复了 【%d】 行数据" % count)
+                                # 再开启多线程并行复制
+                                mysql_conn.turn_on_parallel(slave_workers)
                         else:  # 基于GTID事务号复制
                             if gtid_range is not None and '-' not in str(gtid_range):
                                 gtid_number = int(gtid_range) + 1
@@ -232,4 +243,3 @@ while True:
     time.sleep(1)
 # END while True
 ##################################################################################################
-
