@@ -1,4 +1,4 @@
-import time
+import time, os, sys
 import datetime
 import pymysql
 from pymysqlreplication import BinLogStreamReader
@@ -36,7 +36,7 @@ def check_binlog_settings(mysql_host=None, mysql_port=None, mysql_user=None,
 
         # 检查参数值是否满足条件
         if binlog_format != 'ROW' and binlog_row_image != 'FULL':
-            exit("\nMySQL 的变量参数 binlog_format 的值应为 ROW，参数 binlog_row_image 的值应为 FULL\n")
+            sys.exit("\nMySQL 的变量参数 binlog_format 的值应为 ROW，参数 binlog_row_image 的值应为 FULL\n")
 
     finally:
         # 关闭数据库连接
