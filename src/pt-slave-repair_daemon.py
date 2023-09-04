@@ -20,7 +20,7 @@ parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', r
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
 parser.add_argument('--daemon', dest='daemon', action='store_true', default=False, help='Run as a daemon process')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.2，更新日期：2023-09-01')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.3，更新日期：2023-09-04')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -124,7 +124,7 @@ def main():
             if executed_gtid_set == "":
                 executed_gtid_list = [retrieved_gtid_set]
             else:
-                executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', executed_gtid_set)    
+                executed_gtid_list = re.findall(r'(\w+-\w+-\w+-\w+-\w+:\d+-\d+|\w+-\w+-\w+-\w+-\w+:\d+)', executed_gtid_set)
 
             gtid_domain = None
             gtid_range_value = None
@@ -144,10 +144,13 @@ def main():
 
             # 获取修复数据的SQL语句
             if last_sql_errno in (1062, 1032):
-                repair_sql_list = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user,
-                                                 mysql_passwd=slave_password,
-                                                 mysql_charset='utf8mb4', binlog_file=relay_master_log_file,
-                                                 binlog_pos=exec_master_log_pos)
+                try:
+                    repair_sql_list = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password,
+                                            mysql_charset='utf8mb4', binlog_file=relay_master_log_file,binlog_pos=exec_master_log_pos)
+                except Exception as e:
+                    # 在捕获到异常时使用 sys.exit() 终止程序
+                    logger.error(f"An error occurred: {str(e)}")
+                    sys.exit(1)
                 for count, repair_sql in enumerate(repair_sql_list, 1):
                     logger.info(f"修复数据的SQL语句: {repair_sql}")
 
