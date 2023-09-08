@@ -94,11 +94,16 @@ while True:
                       '  \n\n  \tLast_SQL_Error错误信息是：%s \033[0m' \
                       % (r_dict['Slave_IO_Running'], r_dict['Slave_SQL_Running'], \
                          r_dict['Last_Error'], r_dict['Last_SQL_Error']))
-        error_dict = mysql_conn.get_slave_error()
-        if error_dict is not None:
-            logger.error('错误号是：%s' % error_dict.get('LAST_ERROR_NUMBER'))
-            logger.error('错误信息是：%s' % error_dict.get('LAST_ERROR_MESSAGE'))
-            logger.error('报错时间是：%s\n' % error_dict.get('LAST_ERROR_TIMESTAMP'))
+        check_version = mysql_conn.check_version()
+        print(check_version)
+        check_version = check_version.split("-")[0].split(".")[0:2]
+        check_version = ".".join(check_version)
+        if check_version >= "10.6":
+            error_dict = mysql_conn.get_slave_error()
+            if error_dict is not None:
+                logger.error('错误号是：%s' % error_dict.get('LAST_ERROR_NUMBER'))
+                logger.error('错误信息是：%s' % error_dict.get('LAST_ERROR_MESSAGE'))
+                logger.error('报错时间是：%s\n' % error_dict.get('LAST_ERROR_TIMESTAMP'))
         logger.info('-' * 100)
         logger.info('开始自动修复同步错误的数据......\n')
 
@@ -161,7 +166,7 @@ while True:
                                 logger.info("成功修复了 【%d】 行数据" % count)
                                 # 再开启多线程并行复制
                                 mysql_conn.turn_on_parallel(slave_workers)
-                        else: #基于GTID事务号复制
+                        else:
                             mysql_conn.turn_off_parallel()
                             time.sleep(0.3)
                             skip_pos_r = mysql_conn.skip_gtid(gtid_number)

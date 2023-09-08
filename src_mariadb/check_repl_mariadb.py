@@ -211,4 +211,20 @@ class MySQL_Check(object):
             cursor.close()
 
         return True
-		
+	
+
+    def check_version(self):
+        self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password)
+        cursor = self._connection.cursor()
+        try:
+            version_sql = 'SELECT VERSION()'
+            cursor.execute(version_sql)
+            version = cursor.fetchone()
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            return False
+        finally:
+            cursor.close()
+
+        return version[0]
+	
