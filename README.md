@@ -98,4 +98,6 @@ mysql> show grants for hcy@'%';
 ```
 ### 支持 MySQL5.7/8.0 和 MariaDB 数据库，工具适用于Centos7 系统。
 
+# 8.0默认是caching_sha2_password用户认证，需要更改为 mysql_native_password
+
 
