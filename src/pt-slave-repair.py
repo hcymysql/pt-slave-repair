@@ -237,7 +237,7 @@ while True:
                         # 开启只读
                         mysql_conn.set_super_read_only()
                     else:
-                        logger.info("未更改数据，请查看error.log文件以获取错误信息，并进行问题诊断。")
+                        logger.info(f"未更改数据，请查看log/{db_name}_INFO.log文件以获取错误信息，并进行问题诊断。")
                         # 开启只读
                         mysql_conn.set_super_read_only()
                         break
