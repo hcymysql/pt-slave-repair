@@ -97,7 +97,6 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         server_id=1234567890,
         blocking=False,
         resume_stream=True,
-        #resume_stream=False,
         only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent, MariadbGtidEvent],
         #only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
         log_file=binlog_file,
