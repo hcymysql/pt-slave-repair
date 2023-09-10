@@ -91,12 +91,15 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         "charset": mysql_charset
     }
 
+    print(f"Binlog文件名：{binlog_file}, Position点：{binlog_pos}")
     stream = BinLogStreamReader(
         connection_settings=source_mysql_settings,
         server_id=1234567890,
         blocking=False,
         resume_stream=True,
+        #resume_stream=False,
         only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent, MariadbGtidEvent],
+        #only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
         log_file=binlog_file,
         log_pos=int(binlog_pos)
     )
@@ -110,6 +113,6 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         if isinstance(binlogevent, MariadbGtidEvent):
             gtid_r = binlogevent.gtid
         
-    stream.close()
-    return sql_r, gtid_r
+        stream.close()
+        return sql_r, gtid_r
 
