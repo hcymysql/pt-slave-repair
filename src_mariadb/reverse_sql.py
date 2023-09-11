@@ -108,10 +108,11 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
 
     for binlogevent in stream:
         if isinstance(binlogevent, (WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent)):
-            sql_r = process_binlogevent(binlogevent)
+            #sql_r = process_binlogevent(binlogevent)
+            sql_r.extend(process_binlogevent(binlogevent))
         if isinstance(binlogevent, MariadbGtidEvent):
             gtid_r = binlogevent.gtid
         
-        stream.close()
-        return sql_r, gtid_r
+    stream.close()
+    return sql_r, gtid_r
 
