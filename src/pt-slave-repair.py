@@ -16,7 +16,7 @@ parser.add_argument('-u', '--slave_user', type=str, help='Slave User', required=
 parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', required=True)
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.3，更新日期：2023-09-04')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.4，更新日期：2023-09-15')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -201,9 +201,19 @@ while True:
                     # 先关闭只读
                     mysql_conn.unset_super_read_only()
                     if enable_binlog:
-                        fix_result = mysql_conn.fix_error_enable_binlog(repair_sql)
+                        try:
+                            fix_result = mysql_conn.fix_error_enable_binlog(repair_sql)
+                        except Exception as e:
+                            # 在捕获到异常时使用 sys.exit() 终止程序
+                            logger.error(f"An error occurred: {str(e)}")
+                            sys.exit(1)
                     else:
-                        fix_result = mysql_conn.fix_error_disable_binlog(repair_sql)
+                        try:
+                            fix_result = mysql_conn.fix_error_disable_binlog(repair_sql)
+                        except Exception as e:
+                            # 在捕获到异常时使用 sys.exit() 终止程序
+                            logger.error(f"An error occurred: {str(e)}")
+                            sys.exit(1)
                     if fix_result > 0:
                         # 判断从库是否开启了基于GTID的复制
                         if r_gtid != "ON":  # 基于Position位置点复制
@@ -237,7 +247,7 @@ while True:
                         # 开启只读
                         mysql_conn.set_super_read_only()
                     else:
-                        logger.info(f"未更改数据，请查看log/{db_name}_INFO.log文件以获取错误信息，并进行问题诊断。")
+                        logger.error(f"未更改数据，请查看{db_name}_INFO.log文件以获取错误信息，并进行问题诊断。")
                         # 开启只读
                         mysql_conn.set_super_read_only()
                         break

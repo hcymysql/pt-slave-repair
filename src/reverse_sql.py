@@ -100,8 +100,11 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         log_pos=int(binlog_pos)
     )
 
+    sql_r = []
     for binlogevent in stream:
-        sql_r = process_binlogevent(binlogevent)
-        stream.close()
-        return sql_r
+        #sql_r = process_binlogevent(binlogevent)
+        sql_r.extend(process_binlogevent(binlogevent)) # 2023年9月15日更新，修复报错的数据列表不全的问题。
+        
+    stream.close()
+    return sql_r
 
