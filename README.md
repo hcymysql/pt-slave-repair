@@ -60,13 +60,13 @@ shell> chmod 755 pt-slave-repair
 
 ### 一、前台运行
 ```
-shell> ./pt-slave-repair -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test
+shell> ./pt-slave-repair -H 192.168.198.239 -P 3346 -u repl -p hechunyang -d test
 ```
 #### 注：你可以按<ctrl+c>或者<ctrl+z>退出程序。
 
 ### 二、后台运行
 ```
-shell> nohup ./pt-slave-repair -H 192.168.198.239 -P 3346 -u admin -p hechunyang -d test > /dev/null &
+shell> nohup ./pt-slave-repair -H 192.168.198.239 -P 3346 -u repl -p hechunyang -d test > /dev/null &
 ```
 #### 注：你可以
 ```
@@ -88,13 +88,13 @@ shell> pkill pt-slave-repair
 
 # MySQL 用户的最小化权限：
 ```
-mysql> show grants for hcy@'%';
+mysql> show grants for repl@'%';
 +------------------------------------------------------------------------+
 | Grants for hcy@%                                                       |
 +------------------------------------------------------------------------+
-| GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `hcy`@`%` |
-| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `hcy`@`%`          |
-| GRANT SELECT ON `performance_schema`.* TO `hcy`@`%`                    |
+| GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `repl`@`%`|
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `repl`@`%`         |
+| GRANT SELECT ON `performance_schema`.* TO `repl`@`%`                   |
 +------------------------------------------------------------------------+
 3 rows in set (0.00 sec)
 ```
