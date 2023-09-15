@@ -54,7 +54,7 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 shell> chmod 755 pt-slave-repair
 ```
 
-# 连接到同步报错的slave从库上执行
+# 连接到同步报错的slave从库上执行（请用MySQL复制的账号，例如repl，并赋予工具运行的权限）
 
 ### 一、前台运行
 ```
@@ -100,4 +100,8 @@ mysql> show grants for hcy@'%';
 
 # 8.0默认是caching_sha2_password用户认证，需要更改为 mysql_native_password
 
+# 测试：
 
+1） 先把主从复制环境配置好，然后在主库上插入3条数据，此时从库已经同步完该3条数据，然后在从库truncate掉该表，再到主库上update全表更新，这样就模拟出了1032错误。
+
+2） 运行pt-slave-repair工具修复。
