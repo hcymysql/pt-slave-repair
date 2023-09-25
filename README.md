@@ -3,7 +3,7 @@
 MySQL主从复制作为一种常见的数据同步方式，有时候会出现同步错误导致同步中断的情况。手动修复这些同步错误通常需要耗费时间和精力，并且对于不熟悉MySQL复制的人来说比较困难。
 
 #### pt-slave-repair是对原有pt-slave-restart工具的补充，它提供自动修复MySQL主从同步复制的报错数据，以及恢复中断的sql thread复制线程。
-![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/b23693fd-7219-42db-b9b5-6696a4a28196)
+![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/d71bcceb-d7ba-4aff-b631-32d914810e6e)
 
 #### - 2023年8月31日更新：支持MariaDB数据库，请下载pt-slave-repair_mariadb工具使用。pt-slave-repair工具是运行在 MySQL 上的。
 
