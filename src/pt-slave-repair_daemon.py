@@ -20,7 +20,7 @@ parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', r
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
 parser.add_argument('--daemon', dest='daemon', action='store_true', default=False, help='Run as a daemon process')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.4，更新日期：2023-09-15')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.5，更新日期：2023-09-27')
 
 # 解析命令行参数
 args = parser.parse_args()
