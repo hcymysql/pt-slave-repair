@@ -7,6 +7,7 @@ from pymysqlreplication.row_event import (
     UpdateRowsEvent,
     DeleteRowsEvent
 )
+from pymysqlreplication.event import GtidEvent
 
 ##################################################################################################
 def check_binlog_settings(mysql_host=None, mysql_port=None, mysql_user=None,
@@ -101,10 +102,18 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
     )
 
     sql_r = []
+    last_event = None
+
     for binlogevent in stream:
-        #sql_r = process_binlogevent(binlogevent)
-        sql_r.extend(process_binlogevent(binlogevent)) # 2023年9月15日更新，修复报错的数据列表不全的问题。
-        
+        # 检查每次读取到新的事件时，检查当前事件是否与上一个事件属于同一个事务。
+        # 如果是，则继续处理，如果不是，则退出循环。
+        if last_event and binlogevent.packet.log_pos != last_event.packet.log_pos:
+            break
+        last_event = binlogevent
+
+        result = process_binlogevent(binlogevent)
+        sql_r.extend(result)
     stream.close()
+    #print(sql_r)
     return sql_r
 
