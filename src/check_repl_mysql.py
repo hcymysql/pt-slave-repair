@@ -24,6 +24,8 @@ class MySQL_Check(object):
                 print(f"{self._host}:{self._port} 这是一台主库，环境不匹配！")
                 sys.exit(2)
             elif cursor.execute('SHOW SLAVE HOSTS') == 0 and cursor.execute('SHOW SLAVE STATUS') == 1:
+                #print(f"cursor.execute('SHOW SLAVE HOSTS'):  {cursor.execute('SHOW SLAVE HOSTS')}")
+                #print("这是一台从库")
                 pass
             elif cursor.execute('SHOW SLAVE HOSTS') >= 1 and cursor.execute('SHOW SLAVE STATUS') == 1:
                 pass
@@ -202,7 +204,7 @@ class MySQL_Check(object):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
         cursor = self._connection.cursor()
         try:
-            skip_gtid_sql = 'STOP SLAVE; SET gtid_next = \'{0}\'; BEGIN;COMMIT; SET gtid_next = \'AUTOMATIC\'; START SLAVE' \
+            skip_gtid_sql = 'STOP SLAVE; SET gtid_next = \'{0}\'; BEGIN;COMMIT; SET gtid_next = \'AUTOMATIC\' ' \
                          .format(gtid_value)
             cursor.execute(skip_gtid_sql)
         except pymysql.Error as e:
@@ -218,7 +220,7 @@ class MySQL_Check(object):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
         cursor = self._connection.cursor()
         try:
-            skip_pos_sql = 'STOP SLAVE; SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1; START SLAVE'
+            skip_pos_sql = 'STOP SLAVE; SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1'
             cursor.execute(skip_pos_sql)
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
@@ -228,3 +230,17 @@ class MySQL_Check(object):
 
         return True
 
+
+    def start_slave(self):
+        self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password)
+        cursor = self._connection.cursor()
+        try:
+            start_slave_sql = 'START SLAVE'
+            cursor.execute(start_slave_sql)
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            return False
+        finally:
+            cursor.close()
+
+        return True

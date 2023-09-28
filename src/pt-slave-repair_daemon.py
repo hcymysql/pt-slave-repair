@@ -20,7 +20,7 @@ parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', r
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
 parser.add_argument('--daemon', dest='daemon', action='store_true', default=False, help='Run as a daemon process')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.5，更新日期：2023-09-27')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.6，更新日期：2023-09-28')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -144,9 +144,15 @@ def main():
 
             # 获取修复数据的SQL语句
             if last_sql_errno in (1062, 1032):
+                if gtid_range is not None and '-' not in str(gtid_range):
+                    gtid_number = int(gtid_range) + 1
+                if gtid_range_value is not None:
+                    gtid_number = int(gtid_range_value) + 1
+                gtid_TXID = f"{gtid_domain}:{gtid_number}"
+
                 try:
                     repair_sql_list = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password,
-                                            mysql_charset='utf8mb4', binlog_file=relay_master_log_file,binlog_pos=exec_master_log_pos)
+                                            mysql_charset='utf8mb4', binlog_file=relay_master_log_file,binlog_pos=exec_master_log_pos, gtid_event=gtid_TXID)
                 except Exception as e:
                     # 在捕获到异常时使用 sys.exit() 终止程序
                     logger.error(f"An error occurred: {str(e)}")
@@ -232,6 +238,12 @@ def main():
                             # 开启只读
                             mysql_conn.set_super_read_only()
                             break
+
+                # 修复数据后，开启START SLAVE
+                mysql_conn.start_slave()
+                # 再开启多线程并行复制
+                mysql_conn.turn_on_parallel(slave_workers)
+
             else:
                 logger.info('只处理错误号1032和1062同步报错的数据修复。')
                 break

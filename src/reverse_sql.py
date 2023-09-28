@@ -80,7 +80,11 @@ def process_binlogevent(binlogevent):
     return sql_list
 ##################################################################################################
 def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_passwd=None,
-         mysql_database=None, mysql_charset=None, binlog_file=None, binlog_pos=None):
+         mysql_database=None, mysql_charset=None, binlog_file=None, binlog_pos=None, gtid_event=None):
+
+    #print(f"gtid_event: {gtid_event}")
+    gtid_server_uuid, gtid_number = gtid_event.split(":")
+    gtid_number_next = int(gtid_number) + 1
 
     source_mysql_settings = {
         "host": mysql_host,
@@ -96,23 +100,26 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         server_id=1234567890,
         blocking=False,
         resume_stream=True,
-        only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
+        only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent, GtidEvent],
         log_file=binlog_file,
         log_pos=int(binlog_pos)
     )
 
     sql_r = []
-    last_event = None
+    found_target = False
 
     for binlogevent in stream:
-        # 检查每次读取到新的事件时，检查当前事件是否与上一个事件属于同一个事务。
-        # 如果是，则继续处理，如果不是，则退出循环。
-        if last_event and binlogevent.packet.log_pos != last_event.packet.log_pos:
-            break
-        last_event = binlogevent
+        if isinstance(binlogevent, GtidEvent):
+            if binlogevent.gtid == gtid_event:
+                found_target = True
+                #print(f"found_target: {found_target}")
+            elif found_target and binlogevent.gtid == f"{gtid_server_uuid}:{gtid_number_next}":
+                break
 
-        result = process_binlogevent(binlogevent)
-        sql_r.extend(result)
+        if found_target and isinstance(binlogevent, (WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent)):
+            result = process_binlogevent(binlogevent)
+            sql_r.extend(result)
+ 
     stream.close()
     #print(sql_r)
     return sql_r
