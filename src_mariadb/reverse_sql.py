@@ -112,7 +112,6 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
 
     for binlogevent in stream:
         if isinstance(binlogevent, MariadbGtidEvent):
-            #print(f"gtid_r :{gtid_r}")
             if binlogevent.gtid == f"{domain_id}-{server_id}-{gtid_number_current}":
                 found_target = True
                 gtid_r = binlogevent.gtid
