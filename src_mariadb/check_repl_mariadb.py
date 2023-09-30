@@ -49,7 +49,7 @@ class MySQL_Check(object):
             cursor.close()
 
         return slave_status_dict
-		
+
 
     def get_para_workers(self):
         cursor = self._connection.cursor()
@@ -63,6 +63,20 @@ class MySQL_Check(object):
             cursor.close()
 
         return s_workers_result
+
+
+    def get_slave_gtid(self):
+        cursor = self._connection.cursor()
+
+        try:
+            cursor.execute('SHOW VARIABLES WHERE variable_name = \'gtid_slave_pos\'')
+            gtid_slave_pos = cursor.fetchone()
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+        finally:
+            cursor.close()
+
+        return gtid_slave_pos
 
 
     def turn_off_parallel(self):
@@ -187,7 +201,8 @@ class MySQL_Check(object):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
         cursor = self._connection.cursor()
         try:
-            skip_gtid_sql = 'STOP SLAVE; set global gtid_slave_pos= \'{0}\'; START SLAVE' .format(gtid_value)
+            skip_gtid_sql = 'STOP SLAVE; set global gtid_slave_pos= \'{0}\'' .format(gtid_value)
+            #print(f"skip_gtid_sql: {skip_gtid_sql}")
             cursor.execute(skip_gtid_sql)
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
@@ -202,7 +217,7 @@ class MySQL_Check(object):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password, client_flag=CLIENT.MULTI_STATEMENTS)
         cursor = self._connection.cursor()
         try:
-            skip_pos_sql = 'STOP SLAVE; SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1; START SLAVE'
+            skip_pos_sql = 'STOP SLAVE; SET GLOBAL SQL_SLAVE_SKIP_COUNTER=1'
             cursor.execute(skip_pos_sql)
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
@@ -211,7 +226,7 @@ class MySQL_Check(object):
             cursor.close()
 
         return True
-	
+
 
     def check_version(self):
         self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password)
@@ -227,4 +242,18 @@ class MySQL_Check(object):
             cursor.close()
 
         return version[0]
-	
+
+
+    def start_slave(self):
+        self._connection = pymysql.connect(host=self._host, port=self._port, user=self._user, passwd=self._password)
+        cursor = self._connection.cursor()
+        try:
+            start_slave_sql = 'START SLAVE'
+            cursor.execute(start_slave_sql)
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            return False
+        finally:
+            cursor.close()
+
+        return True

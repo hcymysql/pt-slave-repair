@@ -1,13 +1,13 @@
-import time, os, sys
+import time
 import datetime
 import pymysql
 from pymysqlreplication import BinLogStreamReader
+from pymysqlreplication.event import MariadbGtidEvent
 from pymysqlreplication.row_event import (
     WriteRowsEvent,
     UpdateRowsEvent,
     DeleteRowsEvent
 )
-from pymysqlreplication.event import GtidEvent
 
 ##################################################################################################
 def check_binlog_settings(mysql_host=None, mysql_port=None, mysql_user=None,
@@ -37,7 +37,7 @@ def check_binlog_settings(mysql_host=None, mysql_port=None, mysql_user=None,
 
         # 检查参数值是否满足条件
         if binlog_format != 'ROW' and binlog_row_image != 'FULL':
-            sys.exit("\nMySQL 的变量参数 binlog_format 的值应为 ROW，参数 binlog_row_image 的值应为 FULL\n")
+            exit("\nMySQL 的变量参数 binlog_format 的值应为 ROW，参数 binlog_row_image 的值应为 FULL\n")
 
     finally:
         # 关闭数据库连接
@@ -80,7 +80,12 @@ def process_binlogevent(binlogevent):
     return sql_list
 ##################################################################################################
 def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_passwd=None,
-         mysql_database=None, mysql_charset=None, binlog_file=None, binlog_pos=None):
+         mysql_database=None, mysql_charset=None, binlog_file=None, binlog_pos=None, slave_gtid=None):
+
+    domain_id, server_id, gtid_number = slave_gtid[1].split("-")
+    #print(domain_id, server_id, gtid_number)
+    gtid_number_current = int(gtid_number) + 1
+    gtid_number_next = int(gtid_number) + 2
 
     source_mysql_settings = {
         "host": mysql_host,
@@ -96,24 +101,30 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
         server_id=1234567890,
         blocking=False,
         resume_stream=True,
-        only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
+        only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent, MariadbGtidEvent],
         log_file=binlog_file,
         log_pos=int(binlog_pos)
     )
 
     sql_r = []
-    last_event = None
+    gtid_r = None  # 初始化 GTID 变量
+    found_target = False
 
     for binlogevent in stream:
-        # 检查每次读取到新的事件时，检查当前事件是否与上一个事件属于同一个事务。
-        # 如果是，则继续处理，如果不是，则退出循环。
-        if last_event and binlogevent.packet.log_pos != last_event.packet.log_pos:
-            break
-        last_event = binlogevent
+        if isinstance(binlogevent, MariadbGtidEvent):
+            #print(f"gtid_r :{gtid_r}")
+            if binlogevent.gtid == f"{domain_id}-{server_id}-{gtid_number_current}":
+                found_target = True
+                gtid_r = binlogevent.gtid
+            elif found_target and binlogevent.gtid == f"{domain_id}-{server_id}-{gtid_number_next}":
+                break
 
-        result = process_binlogevent(binlogevent)
-        sql_r.extend(result)
+        if found_target and isinstance(binlogevent, (WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent)):
+            result = process_binlogevent(binlogevent)
+            sql_r.extend(result)
+
     stream.close()
-    #print(sql_r)
-    return sql_r
+    #print(f"sql_r: {sql_r}")
+    #print(f"gtid_r: {gtid_r}")
+    return sql_r, gtid_r
 

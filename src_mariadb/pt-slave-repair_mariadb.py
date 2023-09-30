@@ -16,7 +16,7 @@ parser.add_argument('-u', '--slave_user', type=str, help='Slave User', required=
 parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', required=True)
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.5，更新日期：2023-09-27')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.6，更新日期：2023-09-28')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -83,6 +83,9 @@ while True:
     slave_workers = mysql_conn.get_para_workers()
     slave_workers = int(slave_workers[1])
 
+    # 获取slave的GTID
+    gtid_slave_pos = mysql_conn.get_slave_gtid()
+
     if r_dict['Slave_IO_Running'] == 'Yes' and r_dict['Slave_SQL_Running'] == 'Yes':
         ok_count += 1
         if ok_count < 2:
@@ -123,8 +126,8 @@ while True:
 
         # 获取修复数据的SQL语句
         if last_sql_errno in (1062, 1032):
-            repair_sql_list, gtid_number = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password,
-                                    mysql_charset='utf8', binlog_file=relay_master_log_file, binlog_pos=exec_master_log_pos)
+            repair_sql_list, gtid_number = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password, 
+                                                          mysql_charset='utf8', binlog_file=relay_master_log_file, binlog_pos=exec_master_log_pos, slave_gtid=gtid_slave_pos)
             #print(f"SQL语句：{repair_sql_list}")
             #print(f"GTID事务号：{gtid_number}")
             for count, repair_sql in enumerate(repair_sql_list, 1):
@@ -182,6 +185,12 @@ while True:
                         # 开启只读
                         mysql_conn.set_super_read_only()
                         break
+
+            # 再开启多线程并行复制
+            mysql_conn.turn_on_parallel(slave_workers)
+            # 修复数据后，开启START SLAVE
+            mysql_conn.start_slave()
+
         else:
             logger.info('只处理错误号1032和1062同步报错的数据修复。')
             break
