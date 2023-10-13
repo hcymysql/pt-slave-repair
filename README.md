@@ -1,4 +1,5 @@
 # pt-slave-repair介绍
+https://www.oschina.net/p/pt-slave-repair
 
 MySQL主从复制作为一种常见的数据同步方式，有时候会出现同步错误导致同步中断的情况。手动修复这些同步错误通常需要耗费时间和精力，并且对于不熟悉MySQL复制的人来说比较困难。
 
