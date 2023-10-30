@@ -47,7 +47,7 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/f263eded-85ef-4629-b497-9927bfaa70db)
 
 
-# 工具演示视频：https://www.douyin.com/video/7289451723066740031  
+# 工具演示视频：https://edu.51cto.com/video/1658.html
 
 # 使用
 ```
