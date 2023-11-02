@@ -55,6 +55,18 @@ shell> chmod 755 pt-slave-repair
 ```
 
 # 连接到同步报错的slave从库上执行（请用MySQL复制的账号，例如repl，并赋予工具运行的权限）
+# repl账号最小化权限：
+```
+mysql> show grants for repl@'%';
++------------------------------------------------------------------------+
+| Grants for repl@%                                                       |
++------------------------------------------------------------------------+
+| GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `repl`@`%`|
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `repl`@`%`         |
+| GRANT SELECT ON `performance_schema`.* TO `repl`@`%`                   |
++------------------------------------------------------------------------+
+3 rows in set (0.00 sec)
+```
 
 ### 一、前台运行
 ```
@@ -80,25 +92,9 @@ shell> pkill pt-slave-repair
 
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/743a5585-d78e-41d9-8e89-7dafe6d93222)
 
-
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/a92170ef-cd65-467b-b055-b852732a3076)
 
-
-# MySQL 用户的最小化权限：
-```
-mysql> show grants for repl@'%';
-+------------------------------------------------------------------------+
-| Grants for hcy@%                                                       |
-+------------------------------------------------------------------------+
-| GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `repl`@`%`|
-| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `repl`@`%`         |
-| GRANT SELECT ON `performance_schema`.* TO `repl`@`%`                   |
-+------------------------------------------------------------------------+
-3 rows in set (0.00 sec)
-```
 ### 支持 MySQL5.7/8.0 和 MariaDB 数据库，工具适用于Centos7 系统。
-
-# 8.0默认是caching_sha2_password用户认证，需要更改为 mysql_native_password
 
 # 测试：
 
