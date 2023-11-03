@@ -62,7 +62,7 @@ mysql> show grants for repl@'%';
 | Grants for repl@%                                                       |
 +------------------------------------------------------------------------+
 | GRANT SUPER, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO `repl`@`%`|
-| GRANT SELECT, INSERT, UPDATE, DELETE ON `test`.* TO `repl`@`%`         |
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `yourDB`.* TO `repl`@`%`         |
 | GRANT SELECT ON `performance_schema`.* TO `repl`@`%`                   |
 +------------------------------------------------------------------------+
 3 rows in set (0.00 sec)
