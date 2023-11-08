@@ -7,14 +7,18 @@ import signal
 import logging
 
 # 创建ArgumentParser对象
-parser = argparse.ArgumentParser(description='自动修复MySQL主从同步报错数据')
+parser = argparse.ArgumentParser(description=
+"""
+自动修复MySQL主从同步报错数据 \n
+ - The automatic repair of data synchronization errors(1032/1062) between MySQL master and slave. 
+""", formatter_class=argparse.RawTextHelpFormatter)
 
 # 添加命令行参数
 parser.add_argument('-H', '--slave_ip', type=str, help='Slave IP', required=True)
 parser.add_argument('-P', '--slave_port', type=int, help='Slave Port', required=True)
-parser.add_argument('-u', '--slave_user', type=str, help='Slave User', required=True)
-parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', required=True)
-parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
+parser.add_argument('-u', '--slave_user', type=str, help='Slave Repl User', required=True)
+parser.add_argument('-p', '--slave_password', type=str, help='Slave Repl Password', required=True)
+parser.add_argument('-d', '--db_name', type=str, help='Your Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
 parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.7，更新日期：2023-11-08')
 
