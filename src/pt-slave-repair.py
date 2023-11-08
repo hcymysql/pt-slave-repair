@@ -16,7 +16,7 @@ parser.add_argument('-u', '--slave_user', type=str, help='Slave User', required=
 parser.add_argument('-p', '--slave_password', type=str, help='Slave Password', required=True)
 parser.add_argument('-d', '--db_name', type=str, help='Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.6，更新日期：2023-09-28')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.7，更新日期：2023-11-08')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -162,6 +162,9 @@ while True:
             try:
                 repair_sql_list = parsing_binlog(mysql_host=master_host, mysql_port=master_port, mysql_user=master_user, mysql_passwd=slave_password,
                                     mysql_charset='utf8mb4', binlog_file=relay_master_log_file, binlog_pos=exec_master_log_pos, gtid_event=gtid_TXID)
+                if repair_sql_list is None:
+                    logger.error("没有捕获到正确的GTID事件，请检查change master to的时候master_auto_position是等于1吗？show slave status看看Auto_Position的值是不是为1。")
+                    sys.exit(1)
             except Exception as e:
                 # 在捕获到异常时使用 sys.exit() 终止程序
                 logger.error(f"An error occurred: {str(e)}")
@@ -264,4 +267,3 @@ while True:
     time.sleep(1)
 # END while True
 ##################################################################################################
-
