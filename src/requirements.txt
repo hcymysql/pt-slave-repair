@@ -1,3 +1,0 @@
-pymysql
-mysql-replication
-python-daemon
