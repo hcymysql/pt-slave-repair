@@ -6,10 +6,12 @@ MySQL主从复制作为一种常见的数据同步方式，有时候会出现同
 #### pt-slave-repair是对原有pt-slave-restart工具的补充，它提供自动修复MySQL主从同步复制的报错数据，以及恢复中断的sql thread复制线程。
 
 ```
-pt-slave-repair 工具版本号: 1.0.8，更新日期：2024-08-13 - 支持解析json
+pt-slave-repair 工具版本号: 1.0.9，更新日期：2025-03-25 
+1) 用户可以自创建账号，无需用repl账号
+2) binlog没有解析成功，直接退出，避免程序无休止运行。
 
 二进制文件下载地址：
-https://github.com/hcymysql/pt-slave-repair/releases/tag/pt-slave-repair_v1.0.8
+https://github.com/hcymysql/pt-slave-repair/releases/tag/pt-slave-repair_v1.0.9
 ```
 
 ![image](https://github.com/hcymysql/pt-slave-repair/assets/19261879/d71bcceb-d7ba-4aff-b631-32d914810e6e)
