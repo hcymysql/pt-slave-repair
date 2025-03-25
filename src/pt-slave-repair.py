@@ -20,7 +20,7 @@ parser.add_argument('-u', '--slave_user', type=str, help='Slave Repl User', requ
 parser.add_argument('-p', '--slave_password', type=str, help='Slave Repl Password', required=True)
 parser.add_argument('-d', '--db_name', type=str, help='Your Database Name', required=True)
 parser.add_argument('-e', '--enable-binlog', dest='enable_binlog', action='store_true', default=False, help='Enable binary logging of the restore data')
-parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.8，更新日期：2024-08-13')
+parser.add_argument('-v', '--version', action='version', version='pt-slave-repair工具版本号: 1.0.9，更新日期：2025-03-25')
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -119,7 +119,7 @@ while True:
 
         # 获取slave info信息
         master_host = r_dict['Master_Host']
-        master_user = r_dict['Master_User']
+        master_user = slave_user
         master_port = int(r_dict['Master_Port'])
         relay_master_log_file = r_dict['Relay_Master_Log_File']
         exec_master_log_pos = r_dict['Exec_Master_Log_Pos']

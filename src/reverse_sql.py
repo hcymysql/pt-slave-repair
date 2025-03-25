@@ -144,5 +144,7 @@ def parsing_binlog(mysql_host=None, mysql_port=None, mysql_user=None, mysql_pass
  
     stream.close()
     #print(sql_r)
+    # 添加空列表检查
+    if not sql_r:  # 如果 sql_r 为空列表
+        sys.exit("\033[33m\n未能成功解析主库的 binlog 日志信息，主程序已退出。\n\033[0m")
     return sql_r
-
